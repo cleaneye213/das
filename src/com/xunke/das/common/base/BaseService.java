@@ -36,8 +36,9 @@ public abstract class BaseService<B,M extends BaseDao<B>> {
 	}
 	
 	
-	
-	
+	public Object getSigleCloumnVal(Connection conn,String sql,Object...params) throws SQLException{
+		return getDao().querySignleCloumn(conn,sql, params);
+	}
 	
 	
 	

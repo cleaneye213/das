@@ -24,4 +24,14 @@ public class C3p0Utils {
 	public static DataSource getDataSource(){
 		return dataSource;
 	}
+	
+	public static void closeConnection(Connection conn){
+		if(conn!=null){
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

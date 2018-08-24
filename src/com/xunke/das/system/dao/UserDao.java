@@ -47,6 +47,7 @@ public class UserDao extends BaseDaoImpl<User>{
 		
 		Connection conn=C3p0Utils.getConnection();
 		update(conn, sql.toString(),list.toArray() );
+		C3p0Utils.closeConnection(conn);
 	}
 	
 	/**
@@ -63,7 +64,9 @@ public class UserDao extends BaseDaoImpl<User>{
 		List<Object> list=MyUtil.getSqlValue(user);
 		list.add(user.getId());
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), list.toArray());
+		int rNum=update(conn, sql.toString(), list.toArray());
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -75,7 +78,9 @@ public class UserDao extends BaseDaoImpl<User>{
 	 */
 	public int updateUserBySql(String sql,Object[]... param) throws Exception{
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), param);
+		int rNum=update(conn, sql.toString(), param);
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -87,7 +92,9 @@ public class UserDao extends BaseDaoImpl<User>{
 	 */
 	public int deleteUserBySql(String sql,Object[]... param) throws Exception{
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), param);
+		int rNum=update(conn, sql.toString(), param);
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -113,12 +120,16 @@ public class UserDao extends BaseDaoImpl<User>{
 			}
 		}
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), list.toArray());
+		int rNum=update(conn, sql.toString(), list.toArray());
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	public List<User> queryBySql(String sql,Object... o ) throws SQLException{
 		Connection conn=C3p0Utils.getConnection();
-		return queryBeanList(conn,sql,o);
+		List<User> list=queryBeanList(conn,sql,o);
+		C3p0Utils.closeConnection(conn);
+		return list;
 	}
 	
 	public List<User> queryUsers(User user) throws Exception{

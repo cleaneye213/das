@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface BaseDao<T>{
 	
+	Object querySignleCloumn(Connection conn,String sql,Object...params) throws SQLException;
+	
 	
 	List<T> queryBeanList(Connection conn,String sql,Object...params) throws SQLException;
 	

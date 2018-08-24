@@ -626,24 +626,25 @@
 
     <!-- 自定义js -->
     <script src="hplus/js/hplus.js?v=4.1.0"></script>
+    
+    
     <script type="text/javascript" src="hplus/js/contabs.js"></script>
-
     <!-- 第三方插件 -->
     <script src="hplus/js/plugins/pace/pace.min.js"></script>
     
     <script type="text/javascript">
-    
     	$(function(){
-    		//alert("刚刚进入页面");
-    		initMenu();
-    	})
+    		//initMenu();
+    	});
     	
+    	//防止无法在iframe中正常显示,该方法写在contab.js中了
         var str="";
     	function initMenu(){
     		$.ajax({
     			url:"<%=basePath%>/mainServlet?action=loadMenu",
     			dataType:"json",
     			type:"POST",
+    			async: false,
     			success:function(menu){
     				var list=menu.data;
     				for(var i=0;i<list.length;i++){
@@ -652,6 +653,15 @@
                     console.log(str);
                     //插入菜单
                     $("#side-menu").append(str);
+                    $('#side-menu').metisMenu();
+                    <!--
+                    $(".J_menuItem").each(function (index) {
+                        if (!$(this).attr('data-index')) {
+                            $(this).attr('data-index', index);
+                        }
+                    });
+                    -->
+                    //$('.J_menuItem').on('click', menuItem);
     			}
     		})
     	}
@@ -660,7 +670,11 @@
     	function printMenu(menu){
     		console.info(menu.menuName);
             str+="<li>";
-            str+='<a href='+menu.menuPath+'><i class="fa fa-edit"></i> <span class="nav-label">'+menu.menuName+'</span><span class="fa arrow"></span></a>';
+            if(null!=menu.childMenu && menu.childMenu.length>0){
+            	str+='<a href='+menu.menuPath+'><i class="fa fa-edit"></i> <span class="nav-label">'+menu.menuName+'</span><span class="fa arrow"></span></a>';
+            }else{
+            	str+='<a class="J_menuItem" href=<%=basePath%>'+menu.menuPath+'>'+menu.menuName+'</a>';
+            }
     		if(null!=menu.childMenu && menu.childMenu.length>0){//如果它有下一级
                 if(menu.level=="1" || menu.level=="2"){
                     str+='<ul class="nav nav-second-level">';
@@ -674,9 +688,7 @@
     		}
             str+='</li>';
     	}
-    
     </script>
-
 </body>
 
 </html>

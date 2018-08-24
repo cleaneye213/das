@@ -13,22 +13,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.xunke.das.common.base.BaseServlet;
 import com.xunke.das.common.base.PageBean;
+import com.xunke.das.common.db.C3p0Utils;
+import com.xunke.das.common.utils.GsonUtils;
 import com.xunke.das.system.bean.User;
 import com.xunke.das.system.service.UserService;
 import com.xunke.das.system.service.UserService_bak;
 
 /**
- *
- * @File name:  UserServlet.java
- * @Description:   
- * @Create on:  2018年8月17日 下午7:52:23
- * @LinkPage :  
- * @ChangeList
- * ---------------------------------------------------
- * Date         Editor              ChangeReasons
- *
+ * 
+ * @author zwl
  *
  */
 @WebServlet("/userServlet")
@@ -39,42 +35,32 @@ public class UserServlet extends BaseServlet {
 	 */
 	private static final long serialVersionUID = 189906650295152382L;
 
-	private UserService userService=new UserService();
-	
-	public void queryUserPage(HttpServletRequest req, HttpServletResponse resp) throws Exception{
-		String startStr=req.getParameter("start");
-		String lengthStr=req.getParameter("length");
-		String drawStr=req.getParameter("draw");
+	private UserService userService = new UserService();
+
+	public void queryUserPage(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		String startStr = req.getParameter("start");
+		String lengthStr = req.getParameter("length");
+		String drawStr = req.getParameter("draw");
 		
-		Integer start=0;
-		Integer length=5;
-		Integer draw=0;
-		if(StringUtils.isNotBlank(startStr)){
-			start=Integer.parseInt(startStr);
-			length=Integer.parseInt(lengthStr);
+		String userName=req.getParameter("userName");
+		String loginName=req.getParameter("loginName");
+		
+		StringBuffer sql = new StringBuffer("select * from s_user where 1=1 ");
+		StringBuffer sql2 = new StringBuffer("select count(1) from s_user where 1=1 ");
+		if(StringUtils.isNotEmpty(userName)){
+			sql.append(" and user_name like ?");
+			sql2.append(" and user_name like ?");
 		}
-		if(StringUtils.isNotBlank(lengthStr)){
-			length=Integer.parseInt(lengthStr);
+		if(StringUtils.isNotEmpty(loginName)){
+			sql.append(" and login_name like ?");
+			sql2.append(" and login_name like ?");
 		}
-		if(StringUtils.isNotBlank(drawStr)){
-			draw=Integer.parseInt(drawStr);
-		}
+		sql.append(" limit ?,?");
 		
-		String sql="select * from s_user";
-		sql+=" limit ?,?";
+		PageBean<User> pageBean = new PageBean<>(startStr, lengthStr, drawStr);
 		
-		List<User> queryUser = userService.queryUser(sql, new Object[]{start,length});
-		
-		
-		PageBean<User> pageBean=new PageBean<>();
-		pageBean.setsEcho(draw);
-		pageBean.setAaData(queryUser);
-		pageBean.setiTotalDisplayRecords(7);//查询select count(1) from s_user 条件跟上面查询一致
-		pageBean.setiTotalRecords(7);
-		
-		Gson gson=new Gson();
-		resp.getWriter().write(gson.toJson(pageBean));
+		userService.queryUserPage(pageBean,sql.toString(),sql2.toString());
+		resp.getWriter().write(GsonUtils.toJson(pageBean));
 	}
-	
-	
+
 }

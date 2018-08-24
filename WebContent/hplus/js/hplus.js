@@ -4,7 +4,7 @@
 
 
 $(document).ready(function () {
-
+	//initMenu();
     // MetsiMenu
     $('#side-menu').metisMenu();
 

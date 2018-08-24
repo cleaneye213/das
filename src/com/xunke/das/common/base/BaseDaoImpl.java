@@ -13,6 +13,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import com.xunke.das.common.db.C3p0Utils;
 
@@ -31,6 +32,11 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 		//getActualTypeArguments获取参数化类型的数组，泛型可能有多个
 		type=(Class<T>) p.getActualTypeArguments()[0];
 
+	}
+	
+	@Override
+	public Object querySignleCloumn(Connection conn, String sql, Object... params) throws SQLException {
+		return qRunner.query(conn,sql, new ScalarHandler<Object>());
 	}
 
 	@Override

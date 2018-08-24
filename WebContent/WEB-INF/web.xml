@@ -11,4 +11,18 @@
   </welcome-file-list>
   
   
+  <error-page>
+  	<error-code>404</error-code>
+  	<location>/404.jsp</location>
+  </error-page>
+  <error-page>
+  	<error-code>500</error-code>
+  	<location>/500.jsp</location>
+  </error-page>
+  <session-config>
+  	<!-- 这里的时间单位是分钟：及这里配置session失效时间为30分钟 
+  		要配置在sevlet,listener,filter的后面
+  	-->
+  	<session-timeout>30</session-timeout>
+  </session-config>
 </web-app>

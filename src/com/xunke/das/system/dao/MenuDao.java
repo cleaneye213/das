@@ -55,6 +55,7 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 		
 		Connection conn=C3p0Utils.getConnection();
 		update(conn, sql.toString(),list.toArray() );
+		C3p0Utils.closeConnection(conn);
 	}
 	
 	/**
@@ -71,7 +72,9 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 		List<Object> list=MyUtil.getSqlValue(menu);
 		list.add(menu.getId());
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), list.toArray());
+		int rNum=update(conn, sql.toString(), list.toArray());
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -83,7 +86,9 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 	 */
 	public int updateMenuBySql(String sql,Object[]... param) throws Exception{
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), param);
+		int rNum=update(conn, sql.toString(), param);
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -95,7 +100,9 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 	 */
 	public int deleteMenuBySql(String sql,Object[]... param) throws Exception{
 		Connection conn=C3p0Utils.getConnection();
-		return update(conn, sql.toString(), param);
+		int rNum=update(conn, sql.toString(), param);
+		C3p0Utils.closeConnection(conn);
+		return rNum;
 	}
 	
 	/**
@@ -126,7 +133,9 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 	
 	public List<Menu> queryBySql(String sql,Object... o ) throws SQLException{
 		Connection conn=C3p0Utils.getConnection();
-		return queryBeanList(conn,sql,o);
+		List<Menu> list=queryBeanList(conn,sql,o);
+		C3p0Utils.closeConnection(conn);
+		return list;
 	}
 	
 	public List<Menu> queryMenus(Menu menu) throws Exception{
@@ -158,7 +167,5 @@ public class MenuDao extends BaseDaoImpl<Menu> {
 			list=roleDao.queryBySql(sql.toString(), new Object[] { tempMenu.getId() });
 		}
 		return list;
-	
-		
 	}
 }

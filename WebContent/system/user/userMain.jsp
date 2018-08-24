@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <div class="col-sm-4 col-sm-offset-2">
                             <button id="searchBtn" type="button" class="btn btn-primary">查 询</button>
-                            <button style="display: none;" id="addBtn" type="button" class="btn btn-primary"
+                            <button style="display:;" id="addBtn" type="button" class="btn btn-primary"
                                     onclick="addObj();">新 增
                             </button>
                         </div>
@@ -92,6 +92,7 @@
                                     <th>真实姓名</th>
                                     <th>性别</th>
                                     <th>创建时间</th>
+                                    <th>更新时间</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -104,6 +105,7 @@
                                     <th>真实姓名</th>
                                     <th>性别</th>
                                     <th>创建时间</th>
+                                    <th>更新时间</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -128,9 +130,17 @@
 
     <!-- Page-Level Scripts -->
     <script>
+        var userTable;
         $(document).ready(function () {
+            //绑定查询按钮
+            $("#searchBtn").click(function(event) {
+                queryUserPage();
+            });
+
             //$('.dataTables-example').dataTable();
-             var userTable =  $(".dataTables-example").dataTable({
+            var userName=$("#userName").val();
+            var loginName=$("#loginName").val();
+            userTable =  $(".dataTables-example").dataTable({
 		        "destroy" : true,       //销毁表格对象
 		        "aLengthMenu":[5,10],  //用户可自选每页展示数量 5条或10条
 		        "searching":false,//禁用搜索（搜索框）
@@ -153,7 +163,7 @@
 		        "ajax": {  //ajax方式向后台发送请求
 		            "type": "POST",
 		            "url":"<%=basePath%>userServlet?action=queryUserPage",
-		            "data":null,//传递的数据
+		            "data":{"userName":userName,"loginName":loginName},//传递的数据
 		            "dataType" : "json"
 		        },
 		        "columns" : [
@@ -163,7 +173,7 @@
                     { "data": "userName" },
                     { "data": "sex" },
                     { "data": "createTime" },
-                    { "data": "updateId","defaultContent": ''}
+                    { "data": "updateTime","defaultContent": ''}
 		        ],
 		        //渲染
 		         "columnDefs": [
@@ -173,6 +183,16 @@
 		                 },
 		                 "targets": 0 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
 		             },
+                     {
+                         "render": function ( data, type, row ) {
+                            if(data=="1"){
+                                return "男";
+                            }else{
+                                return "女";
+                            }   
+                         },
+                         "targets": 3 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
+                     },
 		         ],
 		        "oLanguage" : { // 国际化配置
 		            "sProcessing" : "正在获取数据，请稍后...",
@@ -195,6 +215,9 @@
 		    });
         });
 
+        function queryUserPage(){
+            userTable.ajax.load();
+        }
     </script>
 
 
