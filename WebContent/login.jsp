@@ -108,7 +108,7 @@
                 param :null,
                 success:function(data){
                     if(data!=null && data.success){
-                        window.location.href="<%=basePath%>index.jsp";
+                        window.location.href="<%=basePath%>index_bak.jsp";
                     }else if(data!=null){
                          alert(data.message);
                     }else{

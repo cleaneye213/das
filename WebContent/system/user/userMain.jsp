@@ -49,11 +49,12 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <div class="col-sm-4 col-sm-offset-2">
+                        <div class="col-sm-5 col-sm-offset-2">
                             <button id="searchBtn" type="button" class="btn btn-primary">查 询</button>
                             <button style="display:;" id="addBtn" type="button" class="btn btn-primary"
-                                    onclick="addObj();">新 增
-                            </button>
+                            onclick="addObj()" >新 增</button>
+                             <button style="display:;" id="removeBtn" type="button" class="btn btn-danger"
+                            onclick="removeObj()">删除    </button>
                         </div>
                     </div>
                 </div>
@@ -96,20 +97,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th>序号</th>
-                                    <th>登录名</th>
-                                    <th>真实姓名</th>
-                                    <th>性别</th>
-                                    <th>创建时间</th>
-                                    <th>更新时间</th>
-                                </tr>
-                            </tfoot>
                         </table>
-
                     </div>
                 </div>
             </div>
@@ -132,15 +121,12 @@
     <script>
         var userTable;
         $(document).ready(function () {
-            //绑定查询按钮
-            $("#searchBtn").click(function(event) {
-                queryUserPage();
-            });
+           
 
             //$('.dataTables-example').dataTable();
             var userName=$("#userName").val();
             var loginName=$("#loginName").val();
-            userTable =  $(".dataTables-example").dataTable({
+            userTable =  $(".dataTables-example").DataTable({
 		        "destroy" : true,       //销毁表格对象
 		        "aLengthMenu":[5,10],  //用户可自选每页展示数量 5条或10条
 		        "searching":false,//禁用搜索（搜索框）
@@ -163,7 +149,10 @@
 		        "ajax": {  //ajax方式向后台发送请求
 		            "type": "POST",
 		            "url":"<%=basePath%>userServlet?action=queryUserPage",
-		            "data":{"userName":userName,"loginName":loginName},//传递的数据
+		            "data":{
+		            	"userName":function(){return $("#userName").val();},
+		            	"loginName":function(){ return $("#loginName").val();}
+		            },//传递的数据
 		            "dataType" : "json"
 		        },
 		        "columns" : [
@@ -179,7 +168,7 @@
 		         "columnDefs": [
 		             {
 		                 "render": function ( data, type, row ) {
-		                     return "<input type='radio' name='id'  value='" + data + "'>";
+		                     return "<input type='checkbox' name='id'  value='" + data + "'>";
 		                 },
 		                 "targets": 0 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
 		             },
@@ -192,6 +181,12 @@
                             }   
                          },
                          "targets": 3 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
+                     },
+                     {
+                         "render": function ( data, type, row ) {
+                           return "<a href='system/user/userModify.jsp?cmd=U&id="+row.id+"'>"+data+"</a>"
+                         },
+                         "targets": 1 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
                      },
 		         ],
 		        "oLanguage" : { // 国际化配置
@@ -213,11 +208,49 @@
 		        }
 				//initComplete:initComplete,
 		    });
+                         
+                         
+            //绑定查询按钮
+            $("#searchBtn").click(function(event) {
+                queryUserPage();
+            });
         });
 
         function queryUserPage(){
-            userTable.ajax.load();
+            userTable.ajax.reload();
         }
+        
+        function addObj(){
+        	window.location.href="system/user/userModify.jsp?cmd=A";
+        }
+        
+        function removeObj(){
+        	var ids="";
+        	//循环页面上所有的<input name="id">,把id拼起来
+        	$("input[name='id']").each(function(){
+        		if($(this).is(":checked")==true){
+        			ids=ids+$(this).val()+",";
+        		}
+        	});
+        	ids=new String(ids);
+        	if(ids!=""){
+        		ids=ids.substr(0,ids.length-1);
+        	}
+        	$.ajax({
+        		url:"userServlet?action=removeUser",
+        		dataType:"json",
+        		data:{ids:ids},
+        		type:"post",
+        		success:function(json){
+        			 alert(json.message);
+        			 queryUserPage();
+        		}
+        		
+        	});
+        }
+     
+        
+        
     </script>
 
 
