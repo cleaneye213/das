@@ -14,6 +14,8 @@ public interface BaseDao<T>{
 	
 	Object querySignleCloumn(Connection conn,String sql,Object...params) throws SQLException;
 	
+	Object querySignleCloumn(String sql,Object...params) throws SQLException;
+	
 	
 	List<T> queryBeanList(Connection conn,String sql,Object...params) throws SQLException;
 	
@@ -34,4 +36,15 @@ public interface BaseDao<T>{
 	 * @return
 	 */
 	int update(Connection conn,String sql,Object...params) throws SQLException;
+	
+	/**
+	 * 新增、修改、删除方法
+	 * @param conn
+	 * @param sql 新增、修改、删的sql
+	 * @param params
+	 * @return
+	 */
+	int update(String sql,Object...params) throws SQLException;
+
+	List<T> queryBeanList(String sql, Object[] params) throws SQLException;
 }

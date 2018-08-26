@@ -5,6 +5,7 @@ package com.xunke.das.common.base;
 
 import java.util.Date;
 
+import com.xunke.das.common.annotation.NotColumn;
 import com.xunke.das.common.annotation.TableCloumn;
 import com.xunke.das.common.annotation.TableId;
 
@@ -17,6 +18,7 @@ import com.xunke.das.common.annotation.TableId;
 public class BaseEntity {
 	
 	@TableId("id")
+	@NotColumn
 	private Integer id;
 	
 	@TableCloumn("is_del")

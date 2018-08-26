@@ -28,6 +28,12 @@
     <link href="hplus/css/animate.css" rel="stylesheet">
     <link href="hplus/css/style.css?v=4.1.0" rel="stylesheet">
 
+    <!-- Sweet Alert -->
+    <link href="hplus/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="hplus/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+
 </head>
 
 <body class="gray-bg">
@@ -64,7 +70,6 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>基本 <small>分类，查找</small></h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -94,6 +99,7 @@
                                     <th>性别</th>
                                     <th>创建时间</th>
                                     <th>更新时间</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,7 +121,10 @@
 
     <!-- 自定义js -->
     <script src="hplus/js/content.js?v=1.0.0"></script>
-
+    <!-- Sweet alert -->
+    <script src="hplus/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <!-- web弹层组件 -->
+    <script src="hplus/layer/layer.js"></script>
 
     <!-- Page-Level Scripts -->
     <script>
@@ -162,7 +171,8 @@
                     { "data": "userName" },
                     { "data": "sex" },
                     { "data": "createTime" },
-                    { "data": "updateTime","defaultContent": ''}
+                    { "data": "updateTime","defaultContent": ''},
+                    { "data": "" }
 		        ],
 		        //渲染
 		         "columnDefs": [
@@ -186,7 +196,24 @@
                          "render": function ( data, type, row ) {
                            return "<a href='system/user/userModify.jsp?cmd=U&id="+row.id+"'>"+data+"</a>"
                          },
-                         "targets": 1 //指定渲染列：第一列(渲染第一列为单选框，data自动匹配为  {"data":"id"}中数据）
+                         "targets": 1 
+                     },
+                     {
+                         "render": function ( data, type, row ) {
+                        	 var userName=row.userName;
+                        	 if(userName.length>20){
+                        		 return userName.substring(0,20)+"...";
+                        	 }else{
+                        		 return row.userName;
+                        	 }
+                         },
+                         "targets": 2 
+                     },
+                     {
+                         "render": function ( data, type, row ) {
+                           return "<a href='system/user/userModify.jsp?cmd=U&id="+row.id+"'>修改</a>&nbsp;<a href='javascript:void(0);' onclick='removeOneObj("+row.id+");'>删除</a>"
+                         },
+                         "targets": 6 
                      },
 		         ],
 		        "oLanguage" : { // 国际化配置
@@ -236,6 +263,10 @@
         	if(ids!=""){
         		ids=ids.substr(0,ids.length-1);
         	}
+            if(ids==""){
+                swal("请选择记录!");
+                return false;
+            }
         	$.ajax({
         		url:"userServlet?action=removeUser",
         		dataType:"json",
@@ -249,7 +280,37 @@
         	});
         }
      
-        
+        function removeOneObj(ids){
+            if(ids==""){
+                swal("请选择记录!");
+                return false;
+            }
+            swal({
+                title: "你确定要删除吗?",
+                text: "亲，删除后有可能无法恢复数据!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "是, 我要删除!",
+                cancelButtonText: "取消",
+                closeOnConfirm: false
+            }, function () {
+                $.ajax({
+                    url:"userServlet?action=removeUser",
+                    dataType:"json",
+                    data:{ids:ids},
+                    type:"post",
+                    success:function(json){
+                         swal("Success!", "删除成功!", "success");
+                         queryUserPage();
+                    },
+                    error: function () {
+                        swal("OMG!", "出错了，请重试!", "error");
+                    }
+                    
+                });
+            });   
+        }
         
     </script>
 

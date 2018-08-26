@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.xunke.das.common.annotation.NotColumn;
+import com.xunke.das.common.annotation.TableCloumn;
+import com.xunke.das.common.annotation.TableName;
+import com.xunke.das.common.base.BaseEntity;
 
 /**
  *
@@ -17,35 +20,30 @@ import com.xunke.das.common.annotation.NotColumn;
  *
  *
  */
-public class Role {
-	@NotColumn
-	private String id;
-	private String roleName;
-	private String isDel;
-	private String isEnable;
-	private String remark;
-	private Date createTime;
-	private String createId;
-	private Date updateTime;
-	private String updateId;
+@TableName(name="s_role")
+public class Role  extends BaseEntity{
 	
+	@TableCloumn("role_name")
+	private String roleName;
+	
+	@TableCloumn("remark")
+	private String remark;
 	
 	@NotColumn
 	private List<User> users;
 	@NotColumn
 	private List<Menu> menus;
-	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
 	public String getRoleName() {
 		return roleName;
 	}
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	public List<User> getUsers() {
 		return users;
@@ -59,93 +57,6 @@ public class Role {
 	public void setMenus(List<Menu> menus) {
 		this.menus = menus;
 	}
-	@Override
-	public String toString() {
-		return "Role [id=" + id + ", roleName=" + roleName + ", users=" + users + ", menus=" + menus + "]";
-	}
-	/**
-	 * @return the isDel
-	 */
-	public String getIsDel() {
-		return isDel;
-	}
-	/**
-	 * @param isDel the isDel to set
-	 */
-	public void setIsDel(String isDel) {
-		this.isDel = isDel;
-	}
-	/**
-	 * @return the isEnable
-	 */
-	public String getIsEnable() {
-		return isEnable;
-	}
-	/**
-	 * @param isEnable the isEnable to set
-	 */
-	public void setIsEnable(String isEnable) {
-		this.isEnable = isEnable;
-	}
-	/**
-	 * @return the remark
-	 */
-	public String getRemark() {
-		return remark;
-	}
-	/**
-	 * @param remark the remark to set
-	 */
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	/**
-	 * @return the createTime
-	 */
-	public Date getCreateTime() {
-		return createTime;
-	}
-	/**
-	 * @param createTime the createTime to set
-	 */
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-	/**
-	 * @return the createId
-	 */
-	public String getCreateId() {
-		return createId;
-	}
-	/**
-	 * @param createId the createId to set
-	 */
-	public void setCreateId(String createId) {
-		this.createId = createId;
-	}
-	/**
-	 * @return the updateTime
-	 */
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-	/**
-	 * @param updateTime the updateTime to set
-	 */
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
-	/**
-	 * @return the updateId
-	 */
-	public String getUpdateId() {
-		return updateId;
-	}
-	/**
-	 * @param updateId the updateId to set
-	 */
-	public void setUpdateId(String updateId) {
-		this.updateId = updateId;
-	}
+	
 	
 }

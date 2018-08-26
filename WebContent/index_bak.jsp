@@ -634,7 +634,7 @@
     
     <script type="text/javascript">
     	$(function(){
-    		//initMenu();
+    		initMenu();
     	});
     	
     	//防止无法在iframe中正常显示,该方法写在contab.js中了
@@ -644,7 +644,7 @@
     			url:"<%=basePath%>/mainServlet?action=loadMenu",
     			dataType:"json",
     			type:"POST",
-    			async: false,
+    			async: true,
     			success:function(menu){
     				var list=menu.data;
     				for(var i=0;i<list.length;i++){
@@ -654,14 +654,12 @@
                     //插入菜单
                     $("#side-menu").append(str);
                     $('#side-menu').metisMenu();
-                    <!--
                     $(".J_menuItem").each(function (index) {
                         if (!$(this).attr('data-index')) {
                             $(this).attr('data-index', index);
                         }
                     });
-                    -->
-                    //$('.J_menuItem').on('click', menuItem);
+                    $('.J_menuItem').on('click', menuItem);
     			}
     		})
     	}

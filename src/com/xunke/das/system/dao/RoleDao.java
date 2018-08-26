@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.xunke.das.common.base.BaseDaoImpl;
 import com.xunke.das.common.db.C3p0Utils;
+import com.xunke.das.common.utils.BeanToSqlUtils;
 import com.xunke.das.common.utils.MyUtil;
 import com.xunke.das.system.bean.Role;
 import com.xunke.das.system.bean.User;
@@ -36,28 +37,12 @@ public class RoleDao extends BaseDaoImpl<Role> {
 	 * @author lhj
 	 * @throws SQLException 
 	 */
-	public void insert(Role role) throws Exception{
+	public int insert(Role role) throws Exception{
 		StringBuilder sql=new StringBuilder();
-		sql.append("INSERT INTO s_role(role_name, login_name, password, sex, birthday, address, login_fail_count, is_del, is_enable, create_time, create_id, update_time, update_id)");
-		sql.append("VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		
+		sql.append(BeanToSqlUtils.insertSql(Role.class));
+		System.out.println(sql.toString());
 		List<Object> list = MyUtil.getSqlValue(role);
-		/*list.add(role.getRoleName());
-		list.add(role.getLoginName());
-		list.add(role.getPassword());
-		list.add(role.getSex());
-		list.add(role.getBirthday());
-		list.add(role.getAddress());
-		list.add(role.getLoginFailCount());
-		list.add(role.getIsDel());
-		list.add(role.getIsEnable());
-		list.add(role.getCreateTime());
-		list.add(role.getCreateId());
-		list.add(role.getUpdateTime());
-		list.add(role.getUpdateId());*/
-		
-		Connection conn=C3p0Utils.getConnection();
-		update(conn, sql.toString(),list.toArray() );
+		return update(sql.toString(),list.toArray() );
 	}
 	
 	/**
@@ -129,7 +114,9 @@ public class RoleDao extends BaseDaoImpl<Role> {
 	
 	public List<Role> queryBySql(String sql,Object... o ) throws SQLException{
 		Connection conn=C3p0Utils.getConnection();
-		return queryBeanList(conn,sql,o);
+		List<Role> beanList = queryBeanList(conn,sql,o);
+		C3p0Utils.closeConnection(conn);
+		return beanList;
 	}
 	
 	public List<Role> queryRoles(Role role) throws Exception{
@@ -152,6 +139,10 @@ public class RoleDao extends BaseDaoImpl<Role> {
 	public List<User> getUserRoles(Role role) throws Exception{
 	
 		return null;
+	}
+
+	public int deleteRoleBySql(Connection conn, String sql, Object[] roleId) throws SQLException {
+		return update(conn, sql.toString(),roleId);
 	}
 	
 }

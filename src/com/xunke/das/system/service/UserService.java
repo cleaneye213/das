@@ -1,16 +1,16 @@
 package com.xunke.das.system.service;
 
 import java.sql.Connection;
-import java.util.ArrayList;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
-import com.xunke.das.common.base.BaseDao;
+import org.apache.commons.lang3.StringUtils;
+
 import com.xunke.das.common.base.BaseService;
 import com.xunke.das.common.base.PageBean;
 import com.xunke.das.common.db.C3p0Utils;
 import com.xunke.das.common.utils.BeanToSqlUtils;
-import com.xunke.das.system.bean.Role;
-import com.xunke.das.system.bean.RoleUser;
 import com.xunke.das.system.bean.User;
 import com.xunke.das.system.dao.RoleDao;
 import com.xunke.das.system.dao.RoleUserDao;
@@ -62,6 +62,16 @@ public class UserService extends BaseService<User, UserDao>{
 	public int updateUser(String sql, Object... param) throws Exception {
 		return dao.updateUserBySql(sql, param);
 	}
+	
+	public int updateUser(User user) throws Exception {
+		if(user.getCreateTime()==null){
+			user.setCreateTime(new Date());
+		}
+		if(user.getUpdateTime()==null){
+			user.setUpdateTime(new Date());
+		}
+		return dao.updateUser(user);
+	}
 
 	public List<User> queryUser(String sql, Object... param) throws Exception {
 		return dao.queryBySql(sql, param);
@@ -94,15 +104,17 @@ public class UserService extends BaseService<User, UserDao>{
 	 * @return
 	 * @throws Exception
 	 */
-	public PageBean<User> queryUserPage(PageBean<User> pageBean,String sql,String countSql) throws Exception {
+	public PageBean<User> queryUserPage(PageBean<User> pageBean,String sql,String countSql,List<Object> param) throws Exception {
 		Connection conn = C3p0Utils.getConnection();
 
-		Object cVal = getSigleCloumnVal(C3p0Utils.getConnection(), countSql);
+		Object cVal = getSigleCloumnVal(C3p0Utils.getConnection(), countSql,param.toArray());
 		int total=0;
 		if (cVal != null) {
 			total=Integer.parseInt(String.valueOf(cVal).replace("null", "0"));
 		}
-		List<User> queryUser = queryUser(sql, new Object[] { pageBean.getStart(), pageBean.getLength() });
+		param.add(pageBean.getStart());
+		param.add(pageBean.getLength());
+		List<User> queryUser = queryUser(sql,param.toArray());
 
 		pageBean.setAaData(queryUser);
 		pageBean.setiTotalDisplayRecords(total);
@@ -110,6 +122,13 @@ public class UserService extends BaseService<User, UserDao>{
 		
 		C3p0Utils.closeConnection(conn);
 		return pageBean;
+	}
+
+	public List<User> queryUserByRoleId(String roleId) throws SQLException {
+		String sql="select r.role_name,r.id as role_id,u.* from s_user u,s_role_user ru,s_role r where u.id=ru.user_id and ru.role_id=r.id ";
+		sql+=" and r.id=?";
+		List<User> userBeanList = dao.queryBeanList(sql, new Object[]{roleId});
+		return userBeanList;
 	}
 
 }

@@ -45,10 +45,10 @@
 
             <form name="form1" id="form1" class="m-t" role="form" action="index.html">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="请输入用户名" name="loginName" required="">
+                    <input type="text" class="form-control" placeholder="请输入用户名" name="loginName" required="" value="admin">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" placeholder="请输入密码" name="password" required="">
+                    <input type="password" class="form-control" placeholder="请输入密码" name="password" required="" value="1">
                 </div>
                 <button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
 

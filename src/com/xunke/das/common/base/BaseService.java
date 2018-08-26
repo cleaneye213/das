@@ -29,10 +29,10 @@ public abstract class BaseService<B,M extends BaseDao<B>> {
 	 * @param params
 	 * @return
 	 * @throws SQLException
-	 * @author lhj
 	 */
 	public B getById(Connection conn,Object...params) throws SQLException{
-		return getDao().getBy(conn, getBeanSql(), params);
+		String sql=getBeanSql()+" where id=?";
+		return getDao().getBy(conn, sql, params);
 	}
 	
 	
@@ -40,6 +40,9 @@ public abstract class BaseService<B,M extends BaseDao<B>> {
 		return getDao().querySignleCloumn(conn,sql, params);
 	}
 	
+	public Object getSigleCloumnVal(String sql,Object...params) throws SQLException{
+		return getDao().querySignleCloumn(sql, params);
+	}
 	
 	
 }

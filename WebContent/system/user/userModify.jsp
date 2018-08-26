@@ -192,8 +192,7 @@
                         toastr.error(data.message);
                         $("#saveBtn").attr("disabled", false);
                     } else {
-                        //toastr.success(data.message);
-                        alert(data.message);
+                        toastr(data.message);
                         window.location.href = "system/user/userMain.jsp";
                     }
                 },
@@ -255,7 +254,7 @@
             },
             messages: {
                 loginName: {required: "请输入登录名", maxlength: "登录名长度不能超过64位", isLoginName: "用户名只允许字母、数字和下划线组合"},
-                userName: {required: "请输入真实姓名", maxlength: "真实姓名长度不能超过64位"},
+                userName: {required: "请输入真实姓名", maxlength: "真实姓名长度不能超过20位"},
             },
             errorPlacement: function (error, element) {
                 $("#saveBtn").attr("disabled", false);

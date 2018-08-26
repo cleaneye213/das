@@ -96,6 +96,9 @@ public class LoginServlet extends BaseServlet{
 		//把用户信息存入到session中
 		HttpSession hs=req.getSession();
 		hs.setAttribute("login_name", user.getLoginName());
+		//不把密码保存到session
+		user.setPassword(null);
+		hs.setAttribute("userInfo", user);
 		
 		
 		

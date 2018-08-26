@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.xunke.das.common.annotation.NotColumn;
 import com.xunke.das.system.bean.User;
 
@@ -27,7 +29,18 @@ public class MyUtil {
 		Field[] fs = c.getDeclaredFields();
 		for (int i = 0; i < fs.length; i++) {
 			fs[i].setAccessible(true);
-			if (fs[i].getAnnotation(NotColumn.class) == null) {
+			if (!(fs[i].get(o)==null)) {
+				list.add(fs[i].get(o));
+			}
+		}
+		c=c.getSuperclass();
+		fs=c.getDeclaredFields();
+		for (int i = 0; i < fs.length; i++) {
+			fs[i].setAccessible(true);
+			if(fs[i].getName().equals("id")){
+				continue;
+			}
+			if (!(fs[i].get(o)==null)) {
 				list.add(fs[i].get(o));
 			}
 		}
@@ -86,4 +99,27 @@ public class MyUtil {
 		return sb.toString().toUpperCase();
 	}
 
+	
+	public  static void getParam(HttpServletRequest req,Object obj){
+		Class c=obj.getClass();
+		
+		//由于元素是私有的，所以要用getDeclaredFields才能获取到全部的元素
+		Field[] fs=c.getDeclaredFields();
+		for(int i=0;i<fs.length;i++){
+			User user=new User();
+			//由于元素是私有的，所以要获取一下权限
+			fs[i].setAccessible(true);
+			try {
+				//设置name的值（User对象的，要设置的值是xxx）
+				if(fs[i].getType().getName().equals("int")){
+					fs[i].setInt(obj, Integer.parseInt(req.getParameter(fs[i].getName())));
+				}else{
+					fs[i].set(obj, req.getParameter(fs[i].getName()));
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }

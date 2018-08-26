@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.xunke.das.common.annotation.TableCloumn;
 import com.xunke.das.common.base.BaseDao;
 import com.xunke.das.common.base.BaseDaoImpl;
 import com.xunke.das.common.db.C3p0Utils;
@@ -27,27 +28,52 @@ public class UserDao extends BaseDaoImpl<User>{
 	 */
 	public void insert(User user) throws Exception{
 		StringBuilder sql=new StringBuilder();
-		sql.append("INSERT INTO s_user(user_name, login_name, password, sex, birthday, address, login_fail_count, is_del, is_enable, create_time, create_id, update_time, update_id)");
-		sql.append("VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sql.append("INSERT INTO s_user(");
+		StringBuilder sql2 = new StringBuilder(" VALUES( ");
+		
+		//循环user类里面所有的属性，生成 属性名=？,  这种格式的sql
+				Class c=user.getClass();
+				Field[] fs=c.getDeclaredFields();
+				for(int i=0;i<fs.length;i++){
+					fs[i].setAccessible(true);
+					if(!(fs[i].get(user)==null)){
+						TableCloumn t=fs[i].getAnnotation(TableCloumn.class);
+						if(t!=null){//如果属性有注解tableCloumn,就根据注解名生成字段名
+							sql.append(t.value()).append(",");
+							sql2.append("?,");
+						}else{//如果没有的话，根据类属性名，驼峰转下划线
+							sql.append(MyUtil.humpToUnderline(fs[i].getName())).append(",");
+							sql2.append("?,");
+						}
+					}
+				}
+				//由于有base在，循环base中的所有属性（ID除外）
+				c=c.getSuperclass();
+				fs=c.getDeclaredFields();
+				for(int i=0;i<fs.length;i++){
+					fs[i].setAccessible(true);
+					if(fs[i].getName().equals("id")){
+						continue;
+					}
+					if(!(fs[i].get(user)==null)){
+						TableCloumn t=fs[i].getAnnotation(TableCloumn.class);
+						if(t!=null){//如果属性有注解tableCloumn,就根据注解名生成字段名
+							sql.append(t.value()).append(",");
+							sql2.append("?,");
+						}else{//如果没有的话，根据类属性名，驼峰转下划线
+							sql.append(MyUtil.humpToUnderline(fs[i].getName())).append(",");
+							sql2.append("?,");
+						}
+					}
+				}
+				sql.deleteCharAt(sql.length()-1).append(")");
+				sql2.deleteCharAt(sql2.length()-1).append(")");
 		
 		List<Object> list = MyUtil.getSqlValue(user);
-		/*list.add(user.getUserName());
-		list.add(user.getLoginName());
-		list.add(user.getPassword());
-		list.add(user.getSex());
-		list.add(user.getBirthday());
-		list.add(user.getAddress());
-		list.add(user.getLoginFailCount());
-		list.add(user.getIsDel());
-		list.add(user.getIsEnable());
-		list.add(user.getCreateTime());
-		list.add(user.getCreateId());
-		list.add(user.getUpdateTime());
-		list.add(user.getUpdateId());*/
-		
 		Connection conn=C3p0Utils.getConnection();
-		update(conn, sql.toString(),list.toArray() );
+		update(conn, sql.append(sql2).toString(),list.toArray() );
 		C3p0Utils.closeConnection(conn);
+		
 	}
 	
 	/**
@@ -59,7 +85,41 @@ public class UserDao extends BaseDaoImpl<User>{
 	public int updateUser(User user) throws Exception{
 		StringBuilder sql=new StringBuilder();
 		sql.append("UPDATE s_user ");
-		sql.append("SET user_name=?, login_name=?, password=?, sex=?, birthday=?, address=?, login_fail_count=?, is_del=?, is_enable=?, create_time=?, create_id=?, update_time=?, update_id=?");
+		sql.append("SET  ");
+		
+		//循环user类里面所有的属性，生成 属性名=？,  这种格式的sql
+		Class c=user.getClass();
+		Field[] fs=c.getDeclaredFields();
+		for(int i=0;i<fs.length;i++){
+			fs[i].setAccessible(true);
+			if(!(fs[i].get(user)==null)){
+				TableCloumn t=fs[i].getAnnotation(TableCloumn.class);
+				if(t!=null){//如果属性有注解tableCloumn,就根据注解名生成字段名
+					sql.append(t.value()).append("=?,");
+				}else{//如果没有的话，根据类属性名，驼峰转下划线
+					sql.append(MyUtil.humpToUnderline(fs[i].getName())).append("=?");
+				}
+			}
+		}
+		//由于有base在，循环base中的所有属性（ID除外）
+		c=c.getSuperclass();
+		fs=c.getDeclaredFields();
+		for(int i=0;i<fs.length;i++){
+			fs[i].setAccessible(true);
+			if(fs[i].getName().equals("id")){
+				continue;
+			}
+			if(!(fs[i].get(user)==null)){
+				TableCloumn t=fs[i].getAnnotation(TableCloumn.class);
+				if(t!=null){//如果属性有注解tableCloumn,就根据注解名生成字段名
+					sql.append(t.value()).append("=?,");
+				}else{//如果没有的话，根据类属性名，驼峰转下划线
+					sql.append(MyUtil.humpToUnderline(fs[i].getName())).append("=?");
+				}
+			}
+		}
+		sql.deleteCharAt(sql.length()-1);
+		
 		sql.append(" where id=?");
 		List<Object> list=MyUtil.getSqlValue(user);
 		list.add(user.getId());
@@ -90,7 +150,7 @@ public class UserDao extends BaseDaoImpl<User>{
 	 * @return 删除了多少条
 	 * @throws Exception
 	 */
-	public int deleteUserBySql(String sql,Object[]... param) throws Exception{
+	public int deleteUserBySql(String sql,Object... param) throws Exception{
 		Connection conn=C3p0Utils.getConnection();
 		int rNum=update(conn, sql.toString(), param);
 		C3p0Utils.closeConnection(conn);
@@ -145,6 +205,16 @@ public class UserDao extends BaseDaoImpl<User>{
 				sql.append("and ").append(MyUtil.humpToUnderline(fs[i].getName())).append("=?");
 			}
 		}
+		c=c.getSuperclass();
+		fs=c.getDeclaredFields();
+		for(int i=0;i<fs.length;i++){
+			fs[i].setAccessible(true);
+			Object o=fs[i].get(user);
+			if(!(null==o||MyUtil.emptyCase(o).equals(""))){
+				list.add(o);
+				sql.append("and ").append(MyUtil.humpToUnderline(fs[i].getName())).append("=?");
+			}
+		}
 		return queryBySql(sql.toString(), list.toArray());
 	}
 	
@@ -163,4 +233,5 @@ public class UserDao extends BaseDaoImpl<User>{
 		}
 		return list;
 	}
+
 }
